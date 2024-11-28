@@ -70,12 +70,14 @@ def add_recipe(request):
         description = request.POST.get('description')
         ingredients_data = request.POST.getlist('ingredients[]')
         quantities_data = request.POST.getlist('quantities[]')
+        image = request.FILES.get('image')  # Check for uploaded file
 
         if title and description and ingredients_data:
             recipe = Recipe.objects.create(
                 title=title,
                 description=description,
-                author=request.user
+                author=request.user,
+                image=image  # Assign the file if uploaded
             )
             for ingredient_name, quantity in zip(ingredients_data, quantities_data):
                 Ingredient.objects.create(recipe=recipe, name=ingredient_name, quantity=quantity)
