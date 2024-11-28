@@ -181,39 +181,40 @@ main {
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        $(document).ready(function () {
-            // Handle the add/remove favorite buttons
-            $(".add-fav-btn, .remove-fav-btn").click(function () {
-                const btn = $(this);
-                const recipeId = btn.data("recipe-id");
-                const action = btn.hasClass("add-fav-btn") ? "add" : "remove";
-                const recipeBox = btn.closest(".recipe-box"); // Get the parent recipe-box to remove it later if needed
+    $(document).ready(function () {
+    // Handle the add/remove favorite buttons
+    $(".add-fav-btn, .remove-fav-btn").click(function () {
+        const btn = $(this);
+        const recipeId = btn.data("recipe-id");
+        const action = btn.hasClass("add-fav-btn") ? "add" : "remove";
+        const recipeBox = btn.closest(".recipe-box"); // Get the parent recipe-box to remove it later if needed
 
-                $.ajax({
-                    url: `/toggle-favorite/${recipeId}/`,
-                    method: "POST",
-                    data: {
-                        csrfmiddlewaretoken: "{{ csrf_token }}",
-                        action: action  // Send the action (add or remove) with the request
-                    },
-                    success: function () {
-                        if (action === "add") {
-                            btn.removeClass("add-fav-btn").addClass("remove-fav-btn");
-                            btn.text("Remove from Favorites");
-                        } else {
-                            btn.removeClass("remove-fav-btn").addClass("add-fav-btn");
-                            btn.text("Add to Favorites");
+        $.ajax({
+            url: `/toggle-favorite/${recipeId}/`,
+            method: "POST",
+            data: {
+                csrfmiddlewaretoken: "{{ csrf_token }}",
+                action: action  // Send the action (add or remove) with the request
+            },
+            success: function () {
+                if (action === "add") {
+                    btn.removeClass("add-fav-btn").addClass("remove-fav-btn");
+                    btn.text("Remove from Favorites");
+                } else {
+                    btn.removeClass("remove-fav-btn").addClass("add-fav-btn");
+                    btn.text("Add to Favorites");
 
-                            // Optionally remove the recipe box from the page if removed from favorites
-                            recipeBox.remove();
-                        }
-                    },
-                    error: function () {
-                        alert("Failed to toggle favorite. Please try again.");
-                    }
-                });
-            });
+                    // Remove the recipe box from the page when removed from favorites
+                    recipeBox.remove();  // Remove the entire recipe box from the page
+                }
+            },
+            error: function () {
+                alert("Failed to toggle favorite. Please try again.");
+            }
         });
+    });
+});
+
     </script>
 </body>
 </html>
