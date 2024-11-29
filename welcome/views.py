@@ -117,13 +117,18 @@ def recipe_detail(request, recipe_id):
     return render(request, 'recipe_detail.html', {'recipe': recipe, 'ingredients': ingredients})
 
 # Toggle Favorite view
+from django.http import JsonResponse
+
 @login_required
 def toggle_favorite(request, recipe_id):
-    recipe = get_object_or_404(Recipe, id=recipe_id)
-    favorite, created = Favorite.objects.get_or_create(user=request.user, recipe=recipe)
-    if not created:
-        favorite.delete()
-        messages.info(request, "Removed from favorites.")
-    else:
-        messages.success(request, "Added to favorites.")
-    return redirect('favorites')
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        recipe = get_object_or_404(Recipe, id=recipe_id)
+
+        if action == 'add':
+            Favorite.objects.get_or_create(user=request.user, recipe=recipe)
+        elif action == 'remove':
+            Favorite.objects.filter(user=request.user, recipe=recipe).delete()
+
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False}, status=400)
